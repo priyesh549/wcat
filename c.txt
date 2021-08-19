@@ -4,6 +4,6 @@ hello
 a
 
 
-I am new here
+i am new here
 
-What's your name ?
+what's your name ?

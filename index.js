@@ -8,6 +8,7 @@ let arguments = process.argv.slice(2); // process.argv returns the array with fi
 let flags = [];
 let filenames = [];
 let secondaryArguments = [];
+let tertiaryArguments = [];
 
 // segration of files and wcat commands
 for(let i of arguments){
@@ -16,6 +17,9 @@ for(let i of arguments){
     }
     else if(i[0] == "%"){
         secondaryArguments.push(i.slice(1)); // to remove percentage in our actual execution
+    }
+    else if(i[0] == "$"){
+        tertiaryArguments.push(i.slice(1)); // to add a replace a word/character or add a data to file
     }
     else{
         filenames.push(i);
@@ -66,7 +70,13 @@ for(let i of arguments){
 
 // 6. wcat -sn f1 f2 f3 f4 ........... assign numbers to lines of each file which are non empty
 
-// 7. wcat -rel f1 f2 f3 f4 ............ remove extra lines i.e. only one single line in continuation
+// 7. wcat -rel f1 f2 f3 f4 ............ remove extra lines i.e. only one single line in continuation.
+
+// 8. wcat -rep f1 f2 f3 f4 ........... replace a word/char with the other word.
+
+// 9. wcat -crtf -> to create a new txt file 
+
+// 10. wcat -mC f1 f2 f3 f4 .......................Make first letter of a line capital 
 
 for(let file of filenames){
     let fileData = fs.readFileSync(file,"utf-8");
@@ -80,7 +90,7 @@ for(let file of filenames){
         if(flag == "-rsc"){
             // to remove those characters which have special meaning write them as string in terminals.
             for(let secondaryArgument of secondaryArguments){
-                fileData = removeAll(fileData,secondaryArgument);
+                fileData = removeAll(fileData,secondaryArgument,tertiaryArguments);
             }
         }
         if(flag == "-s"){
@@ -91,6 +101,15 @@ for(let file of filenames){
         }
         if(flag == "-rel"){
             fileData = removeExtraline(fileData);
+        }
+        if(flag == "-rep"){
+            fileData = replaceName(fileData,secondaryArguments,tertiaryArguments);
+        }
+        if(flag == "-ad"){
+            fileData = addcontent();
+        }
+        if(flag == "-mfC"){
+            fileData = makefirstcapital(fileData);
         }
     }
     console.log(fileData);
@@ -131,7 +150,6 @@ function removeExtraline(content){
     let string = "";
     let contentArr = content.split("\n");
     for(let i=0;i<contentArr.length;i++){
-
         if(contentArr[i].length == 1 && x==false){
             continue;
         }
@@ -149,6 +167,26 @@ function removeExtraline(content){
 }
 
 
+function replaceName(string,orignalword,newword){
+    return string.split(orignalword).join(newword); 
+}
 
+// function addcontent()
+// {
+//     var txt = new ActiveXObject("Scripting.FileSystemObject");
+//     var s = txt.CreateTextFile("d.txt", true);
+//     s.WriteLine('Hello');
+//     s.Close();
+// }    
+
+function makefirstcapital(content){
+    let string = "";
+    let contentArr = content.split("\n");
+    for(let i=0;i<contentArr.length;i++){
+        let str = contentArr[i].charAt(0).toUpperCase() + contentArr[i].slice(1);
+        string += str+ "\n";
+    }   
+    return string;
+}
 
 
